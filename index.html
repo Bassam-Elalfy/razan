@@ -1,511 +1,206 @@
-<!doctype html>
-<html lang="ar">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Basma Mohy Academy — LMS</title>
-
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-  <!-- jsPDF for PDF export -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <!-- QR generator -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
+  <meta charset="UTF-8">
+  <title>نظام المدرسة - Basma Mohy</title>
   <style>
-    :root{
-      --bg:#f6f7fb;
-      --card:#ffffff;
-      --accent:#6f42c1; /* purple */
-      --accent-2:#22c55e; /* green */
-      --muted:#6b7280;
-      --glass: rgba(255,255,255,0.6);
+    body {
+      margin: 0;
+      font-family: "Cairo", sans-serif;
+      background: #f5f7fa;
+      color: #333;
     }
-    html,body{height:100%}
-    body{
-      font-family: "Tajawal", "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: linear-gradient(180deg, #f3f4f6 0%, #eef2ff 100%);
-      color:#111827;
-      padding-bottom:40px;
+    header {
+      background: #2c3e50;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
     }
-    .splash{
-      height:100vh; width:100%; display:flex; align-items:center; justify-content:center; flex-direction:column;
-      background: linear-gradient(135deg, rgba(111,66,193,0.12), rgba(34,197,94,0.06));
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      background: #34495e;
+      padding: 10px;
     }
-    .logo {
-      width:96px; height:96px; border-radius:18px;
-      display:flex; align-items:center; justify-content:center;
-      background: linear-gradient(135deg,var(--accent), #9b66e0);
-      color:white; font-weight:700; font-size:28px; box-shadow:0 8px 30px rgba(99,102,241,0.12);
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
     }
-    .container-app{max-width:1100px; margin:30px auto;}
-    .nav-brand{display:flex; gap:12px; align-items:center;}
-    .card{border-radius:12px; box-shadow:0 6px 24px rgba(15,23,42,0.06); background:var(--card)}
-    .btn-accent{background:linear-gradient(90deg,var(--accent), #9b66e0); color:white; border:0}
-    .status-badge.green{background:#ecfdf5;color:#065f46;padding:.35rem .6rem;border-radius:999px;font-weight:600}
-    .status-badge.yellow{background:#fffbeb;color:#92400e;padding:.35rem .6rem;border-radius:999px;font-weight:600}
-    .status-badge.red{background:#fff1f2;color:#981b1b;padding:.35rem .6rem;border-radius:999px;font-weight:600}
-    .small-muted{color:var(--muted);font-size:.85rem}
-    /* RTL friendly tweaks for english mode changed via JS */
-    .hide{display:none}
-    .qrcode-canvas{width:120px;height:120px}
-    footer{opacity:.7;text-align:center;margin-top:30px;font-size:.85rem}
-    .lang-switch{cursor:pointer}
-    .modern-input{border-radius:10px;border:1px solid #e6e8f0;padding:.5rem .75rem}
-    .table thead th{border-bottom:0}
-    .thin{font-weight:500;color:#374151}
+    nav a:hover {
+      color: #f39c12;
+    }
+    section {
+      padding: 50px 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    table th, table td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: center;
+    }
+    table th {
+      background: #2c3e50;
+      color: #fff;
+    }
+    button {
+      padding: 10px 15px;
+      border: none;
+      background: #27ae60;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #219150;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    input {
+      padding: 8px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    footer {
+      text-align: center;
+      background: #2c3e50;
+      color: #fff;
+      padding: 15px;
+      margin-top: 40px;
+    }
   </style>
 </head>
 <body>
-  <!-- Splash -->
-  <div id="splash" class="splash">
-    <div class="logo">BM</div>
-    <h1 style="margin-top:18px; font-weight:700;">Basma Mohy Academy</h1>
-    <p class="small-muted">نظام إدارة مقررات — إدارة طلاب، حضور، اشتراكات، تقارير</p>
-    <div style="margin-top:20px;">
-      <button id="enterBtn" class="btn btn-accent px-4 py-2">ابدأ</button>
-      <button id="enterBtnEng" class="btn btn-outline-secondary px-3 py-2 ms-2">Start (EN)</button>
+
+  <header>
+    <h1>📚 نظام المدرسة - Basma Mohy</h1>
+  </header>
+
+  <nav>
+    <a href="#home">الرئيسية</a>
+    <a href="#students">الطلاب</a>
+    <a href="#subscriptions">الاشتراكات</a>
+    <a href="#report">التقارير</a>
+  </nav>
+
+  <!-- الرئيسية -->
+  <section id="home">
+    <h2>مرحبًا بك 👋</h2>
+    <p style="text-align:center;">هذا النظام يساعد على إدارة الطلاب والاشتراكات والتقارير بشكل سهل واحترافي.</p>
+  </section>
+
+  <!-- الطلاب -->
+  <section id="students">
+    <h2>إدارة الطلاب</h2>
+    <div class="form-group">
+      <input type="text" id="studentName" placeholder="اسم الطالب">
     </div>
-  </div>
-
-  <!-- Main app -->
-  <div id="app" class="container-app hide">
-    <nav class="d-flex justify-content-between align-items-center mb-4">
-      <div class="nav-brand">
-        <div class="logo" style="width:48px;height:48px;font-size:18px">BM</div>
-        <div>
-          <div style="font-weight:800">Basma Mohy Academy</div>
-          <div class="small-muted">Teacher dashboard</div>
-        </div>
-      </div>
-      <div class="d-flex gap-2 align-items-center">
-        <div class="me-2">
-          <button id="langBtn" class="btn btn-light lang-switch">عربي</button>
-        </div>
-        <div>
-          <button id="logoutBtn" class="btn btn-outline-secondary">Logout</button>
-        </div>
-      </div>
-    </nav>
-
-    <div class="row g-4">
-      <!-- Left column -->
-      <div class="col-lg-4">
-        <div class="card p-3 mb-3">
-          <h5 class="mb-2 thin">إضافة طالب جديد</h5>
-          <div class="mb-2 small-muted">أضف طالباً جديداً وعيّن مدة الاشتراك.</div>
-          <div class="mt-3">
-            <input id="newName" class="modern-input w-100 mb-2" placeholder="اسم الطالب">
-            <input id="newEmail" class="modern-input w-100 mb-2" placeholder="البريد (اختياري)">
-            <div class="d-flex gap-2">
-              <input id="newMonths" class="modern-input" type="number" min="1" value="1" style="width:110px" placeholder="شهور">
-              <button id="addStudentBtn" class="btn btn-accent">أضف</button>
-            </div>
-            <div id="addMsg" class="small-muted mt-2"></div>
-          </div>
-        </div>
-
-        <div class="card p-3 mb-3">
-          <h6 class="thin">بحث سريع</h6>
-          <input id="searchInput" class="modern-input w-100" placeholder="ابحث بالاسم أو الإيميل">
-          <div class="small-muted mt-2">فلتر أثناء الكتابة</div>
-        </div>
-
-        <div class="card p-3">
-          <h6 class="thin">تصدير / تقارير</h6>
-          <div class="d-grid gap-2 mt-2">
-            <button id="exportCSV" class="btn btn-outline-primary">تصدير CSV للطلاب</button>
-            <button id="exportAllPDF" class="btn btn-outline-success">تنزيل تقارير PDF جماعي (ZIP)</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right column -->
-      <div class="col-lg-8">
-        <div class="card p-3 mb-3">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <h5 class="m-0 thin">قائمة الطلاب</h5>
-              <div class="small-muted">عرض سريع لحالة الاشتراكات، الحضور، الواجبات</div>
-            </div>
-            <div>
-              <select id="filterSelect" class="modern-input">
-                <option value="all">الكل</option>
-                <option value="expiring">ينتهي خلال 7 أيام</option>
-                <option value="expired">منتهي</option>
-                <option value="active">ساري</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="table-responsive mt-3">
-            <table class="table align-middle">
-              <thead>
-                <tr>
-                  <th>الطالب</th><th>اشتراك</th><th>باقي</th><th>حضور</th><th>واجب</th><th>فعاليات</th>
-                </tr>
-              </thead>
-              <tbody id="studentsTbody"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <div id="studentPanel" class="card p-3 hide">
-          <div class="d-flex justify-content-between">
-            <div>
-              <h5 id="panelName" class="m-0"></h5>
-              <div id="panelEmail" class="small-muted"></div>
-            </div>
-            <div>
-              <span id="panelStatus" class="status-badge green">ساري</span>
-            </div>
-          </div>
-
-          <hr>
-          <div class="row g-3">
-            <div class="col-md-4">
-              <div class="mb-2 small-muted">الحضور</div>
-              <div><button id="checkInBtn" class="btn btn-accent btn-sm">تسجيل حضور</button>
-                <button id="checkOutBtn" class="btn btn-outline-secondary btn-sm">تسجيل انصراف</button></div>
-              <div id="attendanceList" class="mt-2 small-muted"></div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="mb-2 small-muted">واجب (MCQ)</div>
-              <div>
-                <input id="qText" class="modern-input mb-2" placeholder="نص السؤال">
-                <input id="qOpt1" class="modern-input mb-1" placeholder="خيار 1">
-                <input id="qOpt2" class="modern-input mb-1" placeholder="خيار 2">
-                <input id="qOpt3" class="modern-input mb-1" placeholder="خيار 3">
-                <input id="qOpt4" class="modern-input mb-1" placeholder="خيار 4">
-                <select id="qCorrect" class="modern-input mb-2">
-                  <option value="0">الخيار 1</option>
-                  <option value="1">الخيار 2</option>
-                  <option value="2">الخيار 3</option>
-                  <option value="3">الخيار 4</option>
-                </select>
-                <div class="d-flex gap-2">
-                  <button id="addQBtn" class="btn btn-outline-primary btn-sm">إضافة سؤال</button>
-                  <button id="assignQuizBtn" class="btn btn-accent btn-sm">إرسال اختبار للطالب</button>
-                </div>
-                <div id="quizMsg" class="small-muted mt-2"></div>
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="mb-2 small-muted">تقارير / تجديد</div>
-              <div class="d-flex gap-2">
-                <button id="downloadPdfBtn" class="btn btn-outline-success">تحميل تقرير PDF</button>
-                <button id="renew1Btn" class="btn btn-outline-secondary">+1 شهر</button>
-                <button id="renew3Btn" class="btn btn-outline-secondary">+3 شهور</button>
-              </div>
-              <div class="mt-3">
-                <div id="qrWrap"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
+    <div class="form-group">
+      <input type="text" id="studentClass" placeholder="الصف الدراسي">
     </div>
+    <button onclick="addStudent()">➕ إضافة طالب</button>
 
-    <footer>
-      Basma Mohy Academy • LMS — Built with ❤
-    </footer>
-  </div>
+    <table id="studentsTable">
+      <thead>
+        <tr>
+          <th>الاسم</th>
+          <th>الصف</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
 
-  <!-- ZIP library for bulk PDFs (jszip) + FileSaver -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <!-- الاشتراكات -->
+  <section id="subscriptions">
+    <h2>إدارة الاشتراكات</h2>
+    <div class="form-group">
+      <input type="text" id="subStudent" placeholder="اسم الطالب">
+    </div>
+    <div class="form-group">
+      <input type="number" id="subMonths" placeholder="عدد الشهور">
+    </div>
+    <button onclick="addSubscription()">➕ إضافة اشتراك</button>
 
+    <table id="subsTable">
+      <thead>
+        <tr>
+          <th>اسم الطالب</th>
+          <th>عدد الشهور</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- التقارير -->
+  <section id="report">
+    <h2>تقرير PDF</h2>
+    <p style="text-align:center;">اضغط على الزر لتصدير تقرير الطلاب بصيغة PDF.</p>
+    <button onclick="generatePDF()">📄 إنشاء PDF</button>
+  </section>
+
+  <footer>
+    <p>جميع الحقوق محفوظة &copy; 2025 - Basma Mohy</p>
+  </footer>
+
+  <!-- مكتبة PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
-  // ---------- Utility & data persistence ----------
-  const LS_KEY = "basma_mohy_students_v1";
-  let students = []; // array of student objects
-  let currentLang = 'ar';
-  let currentUser = { role: 'teacher', name: 'Teacher' }; // simple local-mode
-  let selectedStudentId = null;
+    const studentsTable = document.querySelector("#studentsTable tbody");
+    const subsTable = document.querySelector("#subsTable tbody");
 
-  function save() {
-    localStorage.setItem(LS_KEY, JSON.stringify(students));
-  }
-  function load() {
-    const raw = localStorage.getItem(LS_KEY);
-    if(raw) students = JSON.parse(raw);
-    else {
-      // seed demo
-      students = [
-        makeStudent("Ahmed Ali","ahmed@example.com",1),
-        makeStudent("Sara Mohamed","sara@example.com",2)
-      ];
-      save();
+    function addStudent() {
+      const name = document.getElementById("studentName").value;
+      const cls = document.getElementById("studentClass").value;
+      if (!name || !cls) return alert("أدخل البيانات كاملة");
+
+      const row = <tr><td>${name}</td><td>${cls}</td></tr>;
+      studentsTable.innerHTML += row;
+      document.getElementById("studentName").value = "";
+      document.getElementById("studentClass").value = "";
     }
-  }
-  function makeStudent(name,email,months){
-    const start = new Date();
-    const end = new Date(start.getTime());
-    end.setMonth(end.getMonth() + (months||1));
-    return {
-      id: Date.now() + Math.floor(Math.random()*999),
-      name: name||"New Student",
-      email: email||"",
-      start: start.toISOString().slice(0,10),
-      end: end.toISOString().slice(0,10),
-      attendance: [], // array of {type, at}
-      quizzes: [], // array of {questions: [{text,opts,correct}], score}
-      watched: 0
-    };
-  }
 
-  // ---------- UI helpers ----------
-  function formatDate(d) {
-    const dt = new Date(d);
-    return dt.toISOString().slice(0,10);
-  }
-  function daysLeft(endDateStr){
-    const today = new Date(); const end = new Date(endDateStr);
-    return Math.ceil((end - today)/(1000*60*60*24));
-  }
+    function addSubscription() {
+      const student = document.getElementById("subStudent").value;
+      const months = document.getElementById("subMonths").value;
+      if (!student || !months) return alert("أدخل البيانات كاملة");
 
-  // ---------- render list ----------
-  function renderStudents(filter='all', q='') {
-    const tbody = document.getElementById('studentsTbody'); tbody.innerHTML='';
-    const list = students.filter(s=>{
-      if(q){
-        const Q=q.toLowerCase(); if(!(s.name.toLowerCase().includes(Q)|| (s.email||'').toLowerCase().includes(Q))) return false;
-      }
-      if(filter==='expiring') return daysLeft(s.end) <= 7 && daysLeft(s.end) >= 0;
-      if(filter==='expired') return daysLeft(s.end) < 0;
-      if(filter==='active') return daysLeft(s.end) >=0;
-      return true;
-    }).sort((a,b)=>daysLeft(a.end)-daysLeft(b.end));
-    for(const s of list){
-      const tr = document.createElement('tr');
-      const dleft = daysLeft(s.end);
-      let statusClass='green', statusText='ساري';
-      if(dleft<0){ statusClass='red'; statusText='منتهي'; }
-      else if(dleft<=7){ statusClass='yellow'; statusText='قريب الانتهاء'; }
-
-      tr.innerHTML = `
-        <td>
-          <div style="font-weight:700">${escapeHtml(s.name)}</div>
-          <div class="small-muted">${escapeHtml(s.email)}</div>
-        </td>
-        <td>${s.start} → ${s.end}</td>
-        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-        <td>${s.attendance.length}</td>
-        <td>${s.quizzes.length ? s.quizzes[s.quizzes.length-1].score : '-'}</td>
-        <td>
-          <div class="d-flex gap-1">
-            <button class="btn btn-sm btn-outline-primary" onclick="openStudent('${s.id}')">فتح</button>
-            <button class="btn btn-sm btn-outline-success" onclick="downloadPdfSingle('${s.id}')">PDF</button>
-            <button class="btn btn-sm btn-outline-secondary" onclick="renewStudent('${s.id}',30)">+شهر</button>
-          </div>
-        </td>
-      `;
-      tbody.appendChild(tr);
+      const row = <tr><td>${student}</td><td>${months} شهور</td></tr>;
+      subsTable.innerHTML += row;
+      document.getElementById("subStudent").value = "";
+      document.getElementById("subMonths").value = "";
     }
-  }
 
-  function escapeHtml(t){ return String(t||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
-
-  // ---------- student panel ----------
-  function openStudent(id){
-    selectedStudentId = id;
-    const s = students.find(x=>x.id==id);
-    if(!s) return;
-    document.getElementById('studentPanel').classList.remove('hide');
-    document.getElementById('panelName').innerText = s.name;
-    document.getElementById('panelEmail').innerText = s.email;
-    const left = daysLeft(s.end);
-    const st = document.getElementById('panelStatus');
-    if(left<0){ st.className='status-badge red'; st.innerText='منتهي'; } else if(left<=7){ st.className='status-badge yellow'; st.innerText='قريب الانتهاء'; } else { st.className='status-badge green'; st.innerText='ساري'; }
-    renderAttendanceList();
-    renderQR(s);
-  }
-
-  // attendance
-  function recordAttendance(type){
-    if(!selectedStudentId) return alert('اختر طالب أولا');
-    const s = students.find(x=>x.id==selectedStudentId);
-    s.attendance.push({type:type,at:new Date().toISOString()});
-    save(); renderStudents(document.getElementById('filterSelect').value, document.getElementById('searchInput').value); renderAttendanceList();
-  }
-  function renderAttendanceList(){
-    const s = students.find(x=>x.id==selectedStudentId);
-    const wrap = document.getElementById('attendanceList'); wrap.innerHTML='';
-    if(!s) return;
-    s.attendance.slice().reverse().slice(0,8).forEach(a=>{
-      const el = document.createElement('div'); el.className='small-muted'; el.innerText = ${a.type} — ${a.at.replace('T',' ').slice(0,19)}; wrap.appendChild(el);
-    });
-  }
-
-  // renew
-  function renewStudent(id, days){
-    const s = students.find(x=>x.id==id);
-    if(!s) return;
-    const end = new Date(s.end);
-    end.setDate(end.getDate() + days);
-    s.end = end.toISOString().slice(0,10);
-    save(); renderStudents(document.getElementById('filterSelect').value, document.getElementById('searchInput').value);
-    if(selectedStudentId==id) openStudent(id);
-  }
-
-  // quiz: create and assign (local simulation)
-  function addQuestionToTemp(){
-    const qt = document.getElementById('qText').value.trim();
-    const opts = [document.getElementById('qOpt1').value, document.getElementById('qOpt2').value, document.getElementById('qOpt3').value, document.getElementById('qOpt4').value].map(x=>x.trim()).filter(x=>x);
-    const corr = parseInt(document.getElementById('qCorrect').value || 0);
-    if(!qt || opts.length<2) return alert('اكمل نص السؤال والخيارات');
-    const temp = window._tempQuestions = window._tempQuestions||[];
-    temp.push({text:qt,opts:opts,correct:corr});
-    document.getElementById('quizMsg').innerText = تم اضافة سؤال (${temp.length});
-    // reset fields
-    document.getElementById('qText').value=''; document.getElementById('qOpt1').value=''; document.getElementById('qOpt2').value=''; document.getElementById('qOpt3').value=''; document.getElementById('qOpt4').value='';
-  }
-  function assignQuizToStudent(){
-    if(!selectedStudentId) return alert('افتح ملف طالب اولا');
-    const temp = window._tempQuestions||[];
-    if(!temp.length) return alert('لا توجد أسئلة مضافة');
-    const s = students.find(x=>x.id==selectedStudentId);
-    // For demo: auto-grade by simulating random answers (or set all correct) — we'll simulate random correctness
-    let score = 0;
-    const qcopy = temp.map(q=>{
-      const answerIndex = Math.floor(Math.random()*q.opts.length); // simulate student answer
-      const isCorrect = answerIndex===q.correct;
-      if(isCorrect) score++;
-      return {...q, answerIndex, isCorrect};
-    });
-    s.quizzes.push({questions:qcopy, score: score + '/' + qcopy.length, at: new Date().toISOString()});
-    window._tempQuestions = [];
-    save(); renderStudents(document.getElementById('filterSelect').value, document.getElementById('searchInput').value);
-    document.getElementById('quizMsg').innerText = تم إرسال الاختبار — النتيجة: ${score}/${qcopy.length};
-  }
-
-  // PDF single
-  async function downloadPdfSingle(id){
-    const s = students.find(x=>x.id==id);
-    if(!s) return;
-    // using jsPDF
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    doc.setFontSize(18); doc.text('تقرير الطالب', 105, 20, {align:'center'});
-    doc.setFontSize(12);
-    doc.text(الاسم: ${s.name}, 20, 40);
-    doc.text(البريد: ${s.email||'-'}, 20, 48);
-    doc.text(بداية الاشتراك: ${s.start}, 20, 56);
-    doc.text(نهاية الاشتراك: ${s.end}, 20, 64);
-    doc.text(الأيام المتبقية: ${daysLeft(s.end)}, 20, 72);
-    doc.text(عدد مرات الحضور: ${s.attendance.length}, 20, 80);
-    doc.text(آخر نتيجة واجب: ${s.quizzes.length? s.quizzes[s.quizzes.length-1].score : '-'}, 20, 88);
-    doc.save(report_${s.id}.pdf);
-  }
-
-  // bulk PDF -> zip
-  async function exportAllPDFs(){
-    const zip = new JSZip();
-    const { jsPDF } = window.jspdf;
-    for(const s of students){
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-      doc.setFontSize(16); doc.text(تقرير الطالب - ${s.name}, 10, 20);
-      doc.setFontSize(11);
-      doc.text(Email: ${s.email||'-'}, 10, 34);
-      doc.text(Subscription end: ${s.end}, 10, 42);
-      doc.text(Attendance count: ${s.attendance.length}, 10, 48);
-      doc.text(Last quiz: ${s.quizzes.length? s.quizzes[s.quizzes.length-1].score : '-'}, 10, 56);
-      const pdfOut = doc.output('arraybuffer');
-      zip.file(report_${s.id}_${s.name.replaceAll(' ','_')}.pdf, pdfOut);
+      doc.text("تقرير الطلاب", 10, 10);
+
+      let y = 20;
+      [...studentsTable.rows].forEach(row => {
+        doc.text(الاسم: ${row.cells[0].innerText}, الصف: ${row.cells[1].innerText}, 10, y);
+        y += 10;
+      });
+
+      doc.save("report.pdf");
     }
-    const content = await zip.generateAsync({type:"blob"});
-    saveAs(content, "reports_all.zip");
-  }
-
-  // export CSV
-  function exportCSV(){
-    const header = ['id','name','email','start','end','days_left','attendance_count','last_quiz'];
-    const rows = students.map(s=>[
-      s.id, s.name, s.email, s.start, s.end, daysLeft(s.end), s.attendance.length, (s.quizzes.length? s.quizzes[s.quizzes.length-1].score : '')
-    ]);
-    let csv = header.join(',') + '\n' + rows.map(r=>r.map(v=>"${String(v).replaceAll('"','""')}").join(',')).join('\n');
-    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-    saveAs(blob, 'students.csv');
-  }
-
-  // QR: show QR for student link (we simulate link)
-  function renderQR(s){
-    const wrap = document.getElementById('qrWrap'); wrap.innerHTML='';
-    const url = location.origin + location.pathname + '#/student/' + s.id;
-    const q = document.createElement('div'); q.className='qrcode-canvas';
-    wrap.appendChild(q);
-    new QRCode(q, {text: url, width:120, height:120});
-    const hint = document.createElement('div'); hint.className='small-muted mt-2'; hint.innerText = 'امسح الـ QR لتسجيل الحضور (محاكاة)';
-    wrap.appendChild(hint);
-  }
-
-  // small helpers
-  function ensureUI(){
-    renderStudents();
-    document.getElementById('addMsg').innerText='';
-  }
-
-  // event wiring
-  document.addEventListener('DOMContentLoaded', ()=> {
-    load();
-    ensureUI();
-
-    // splash buttons
-    document.getElementById('enterBtn').addEventListener('click', ()=>{ document.getElementById('splash').classList.add('hide'); document.getElementById('app').classList.remove('hide'); currentLang='ar'; applyLang(); });
-    document.getElementById('enterBtnEng').addEventListener('click', ()=>{ document.getElementById('splash').classList.add('hide'); document.getElementById('app').classList.remove('hide'); currentLang='en'; applyLang(); });
-
-    document.getElementById('addStudentBtn').addEventListener('click', ()=>{
-      const name = document.getElementById('newName').value.trim();
-      const email = document.getElementById('newEmail').value.trim();
-      const months = parseInt(document.getElementById('newMonths').value) || 1;
-      if(!name) { document.getElementById('addMsg').innerText='ادخل اسم الطالب'; return; }
-      students.unshift(makeStudent(name,email,months));
-      save(); renderStudents(document.getElementById('filterSelect').value, document.getElementById('searchInput').value);
-      document.getElementById('newName').value=''; document.getElementById('newEmail').value=''; document.getElementById('addMsg').innerText='تمت الإضافة';
-    });
-
-    document.getElementById('searchInput').addEventListener('input', (e)=> renderStudents(document.getElementById('filterSelect').value, e.target.value));
-    document.getElementById('filterSelect').addEventListener('change',(e)=> renderStudents(e.target.value, document.getElementById('searchInput').value));
-
-    document.getElementById('checkInBtn').addEventListener('click', ()=> recordAttendance('حضور'));
-    document.getElementById('checkOutBtn').addEventListener('click', ()=> recordAttendance('انصراف'));
-    document.getElementById('renew1Btn').addEventListener('click', ()=> { if(selectedStudentId) renewStudent(selectedStudentId,30);});
-    document.getElementById('renew3Btn').addEventListener('click', ()=> { if(selectedStudentId) renewStudent(selectedStudentId,90);});
-
-    document.getElementById('addQBtn').addEventListener('click', addQuestionToTemp);
-    document.getElementById('assignQuizBtn').addEventListener('click', assignQuizToStudent);
-
-    document.getElementById('downloadPdfBtn').addEventListener('click', ()=> downloadPdfSingle(selectedStudentId));
-    document.getElementById('exportCSV').addEventListener('click', exportCSV);
-    document.getElementById('exportAllPDF').addEventListener('click', exportAllPDFs);
-
-    document.getElementById('logoutBtn').addEventListener('click', ()=>{ if(confirm('Logout?')) location.reload(); });
-
-    document.getElementById('langBtn').addEventListener('click', ()=>{
-      currentLang = currentLang==='ar' ? 'en' : 'ar';
-      applyLang();
-    });
-  });
-
-  // apply language (minimal switching)
-  function applyLang(){
-    const root = document.documentElement;
-    if(currentLang==='ar'){ root.lang='ar'; root.dir='rtl'; document.getElementById('langBtn').innerText='English'; }
-    else { root.lang='en'; root.dir='ltr'; document.getElementById('langBtn').innerText='العربية'; }
-    // a few text swaps (for demo), in a full app you'd internationalize all strings
-    // (kept minimal to remain simple)
-  }
-
-  // Load initial
-  load();
-  applyLang();
   </script>
 </body>
 </html>
